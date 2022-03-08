@@ -19,8 +19,10 @@ for (idummy in 1:1) {
   #SRmodel <- "B" #Beverton-Holt
   SRmodel <- "R" #Ricker (changed model to aSexp(1-S/b))
   nyears <- 20
-  maxRpS <- exp(1.5)
-  capacity <- 100000.
+  #maxRpS <- exp(1.5)
+  #capacity <- 100000.
+  maxRpS <- exp(1.5)*0.5
+  capacity <- 100000*0.5
   RCV <- 0.5
   SCV <- 0.0
   phi <- 0.0 #Connors analysis gives 0.43 median for sockeye stocks
@@ -37,11 +39,11 @@ for (idummy in 1:1) {
   
   ########################## MANUAL CHANGES TO SCENARIO IN THIS SECTION ###################################
   leapyear <- 11
-  #leapa <- log(2)
+  #leapa <- log(2) #shift up
   #leapb <- 2
-  #leapa <- log(0.5)
+  #leapa <- log(0.5) #shift down
   #leapb <- 0.5
-  leapa <- 0.
+  leapa <- log(1.0) #no shift
   leapb <- 1.0
   leapduration <- 10
   if(SRmodel=="B") {
@@ -51,8 +53,15 @@ for (idummy in 1:1) {
   }
   
   # management options
-  #management <- "precise"
-  management <- "imprecise"
+  management <- "Precise"
+  #management <- "Imprecise"
+  
+  if(beta==100000) {
+    hilo <- "Histart"
+  } else {
+    hilo <- "Lostart"
+  }
+    
   
   if(management=="precise") {
     Emin <- trueSmsy #constant escapement goal policy
@@ -80,9 +89,6 @@ for (idummy in 1:1) {
     serr <- ""
   }
   
-  #outname <- paste("results/",SRmodel,as.character(RCV*10),"S",as.character(SCV*10),"C",as.character(CVE*10),
-  #  "phi",as.character(phi),"E",as.character(round(Emin)),"h",as.character(hrate*10),"S1",as.character(round(S)),
-  #  "a_amt",as.character(leapa),"b_amt",as.character(leapb),"yr",leapyear,"dur",leapduration,collapse="")
   if(leapb>1){
     leap <- "Up"} else {
       if(leapb<1) {
@@ -91,7 +97,8 @@ for (idummy in 1:1) {
         leap="Same"
       }
     }
-  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,serr)
+  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,hilo)
+  #  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,serr)
   #outname = "junk"
   outname <- gsub(" ", "", outname, fixed = TRUE)
   ############################ end of manual changes ###############################################################
@@ -115,9 +122,9 @@ for (idummy in 1:1) {
   
   
   #### actual simulation with goal adjustments #############################
-  sims <- paste(outname,"sims.txt")
+  sims <- paste(outname,"Sims.txt")
   sims <- gsub(" ", "", sims, fixed = TRUE)
-  sumsims <- paste(outname,"sum.txt")
+  sumsims <- paste(outname,"Sum.txt")
   sumsims <- gsub(" ", "", sumsims, fixed = TRUE)
   write(c("iter   i     a     b      Smsy      Emin"),file=sims)
   write(c("iter   avgS    lowS%    avgR     lowR      avgC      noC"),file=sumsims)
@@ -228,13 +235,13 @@ mm <- aggregate(result,by=list(result$i),median)
 df <- data.frame(year=mm[,1],avg_goal=mm[,5])
 aggregate(result,by=list(result$i),mean)
 xx <- aggregate(result,by=list(result$i),sd)
-ss <- xx/sqrt(niters0)
+ss <- xx/sqrt(niters)
 ss
 
 df <- data.frame(year=as.ordered(result[,2]),egoal=result[,5],alpha=result[,3],beta=result[,4])
 pp <- ggplot(data=df,aes(y=egoal,x=year))+geom_boxplot()+ylim(0,3*median(df$egoal))
 pp <- pp+geom_abline(slope=0,intercept=trueSmsy,color="red",size=1.5)
-pp <- pp+geom_abline(slope=0,intercept=leapSmsy,color="blue",size=1.5)
+if(leapb != 1) pp <- pp+geom_abline(slope=0,intercept=leapSmsy,color="blue",size=1.5)
 pp <- pp+theme(text = element_text(size = 20)) 
 pp
 fname <- paste(c(outname,"_escgoal.jpg"),collapse="")
@@ -243,7 +250,7 @@ dev.copy(jpeg,fname)
 dev.off()
 pp <- ggplot(data=df,aes(y=beta,x=year))+geom_boxplot()+ylim(0,3*median(df$beta))
 pp <- pp+geom_abline(slope=0,intercept=beta,color="red",size=1.5)
-pp <- pp+geom_abline(slope=0,intercept=beta*leapb,color="blue",size=1.5)
+if(leapb != 1) pp <- pp+geom_abline(slope=0,intercept=beta*leapb,color="blue",size=1.5)
 pp <- pp+theme(text = element_text(size = 20)) 
 pp
 fname <- paste(c(outname,"_beta.jpg"),collapse="")
@@ -252,7 +259,7 @@ dev.copy(jpeg,fname)
 dev.off()
 pp <- ggplot(data=df,aes(y=alpha,x=year))+geom_boxplot()+ylim(0,3*median(df$alpha))
 pp <- pp+geom_abline(slope=0,intercept=alpha,color="red",size=1.5)
-pp <- pp+geom_abline(slope=0,intercept=alpha+leapa,color="blue",size=1.5)
+if(leapb != 1) pp <- pp+geom_abline(slope=0,intercept=alpha+leapa,color="blue",size=1.5)
 pp <- pp+theme(text = element_text(size = 20)) 
 pp
 fname <- paste(c(outname,"_alpha.jpg"),collapse="")
