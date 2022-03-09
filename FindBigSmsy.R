@@ -14,7 +14,7 @@ for (man in c("Precise","Imprecise")) {
           fname <- paste("mixedResults/R",man,harv,sh,star,"Sims.txt")
           fname <- gsub(" ", "", fname, fixed = TRUE)
           xfile <- read.table(fname,header=TRUE)
-          big <- ifelse(xfile$Smsy>1000000,1,0)
+          big <- ifelse(xfile$Smsy>300000,1,0)
           frac_big <- sum(big/niters)
           cat(fname,frac_big,"\n")
           write(c(fname,frac_big),file=outname,append=TRUE)
