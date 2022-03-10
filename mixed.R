@@ -19,12 +19,12 @@ for (idummy in 1:1) {
   #SRmodel <- "B" #Beverton-Holt
   SRmodel <- "R" #Ricker (changed model to aSexp(1-S/b))
   nyears <- 20
-  #maxRpS <- exp(1.5)
-  #capacity <- 100000.
-  maxRpS <- exp(1.5)*0.5
-  capacity <- 100000*0.5
+  maxRpS <- exp(1.5)
+  capacity <- 100000.
+  #maxRpS <- exp(1.5)*0.5
+  #capacity <- 100000*0.5
   RCV <- 0.5
-  SCV <- 0.0
+  SCV <- 0.5
   phi <- 0.0 #Connors analysis gives 0.43 median for sockeye stocks
   if(SRmodel=="B") {
     alpha <- maxRpS
@@ -53,8 +53,8 @@ for (idummy in 1:1) {
   }
   
   # management options
-  management <- "Precise"
-  #management <- "Imprecise"
+  #management <- "Precise"
+  management <- "Imprecise"
   
   if(beta==100000) {
     hilo <- "Histart"
@@ -72,8 +72,8 @@ for (idummy in 1:1) {
   }
   
   #harvHist <- "Normh"
-  harvHist <- "Overh"
-  #harvHist <- "Underh"
+  #harvHist <- "Overh"
+  harvHist <- "Underh"
   
   if(harvHist=="Overh") {
     Emin=Emin/2
@@ -97,8 +97,8 @@ for (idummy in 1:1) {
         leap="Same"
       }
     }
-  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,hilo)
-  #  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,serr)
+#  outname <- paste("mixedResults/",SRmodel,management,harvHist,leap,hilo)
+  outname <- paste("mixedSError/",SRmodel,management,harvHist,leap,hilo,serr)
   #outname = "junk"
   outname <- gsub(" ", "", outname, fixed = TRUE)
   ############################ end of manual changes ###############################################################
