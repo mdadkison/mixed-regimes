@@ -21,7 +21,7 @@ fnames <- c(
 "mixedResults/RImpreciseUnderhDownHistartSims.txt")
 
 ######## have to manually increment because dev.off too slow to keep up with loop? ######################
-i <- 8 
+i <- 18 
 xfile <- read.table(fnames[i],header=TRUE)
 df <- data.frame(Smsy=ifelse(xfile$Smsy>200000,200000,xfile$Smsy))
 pp <- ggplot(df,) + geom_histogram(aes(Smsy),breaks=seq(from=200000/30,to=200000,length.out=30),color="dark red", fill="dark red")
